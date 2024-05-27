@@ -9,6 +9,9 @@ import static java.util.logging.Level.FINE;
 
 import application.io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.metrics.DoubleHistogram;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.api.annotation.support.MethodSpanAttributesExtractor;
 import io.opentelemetry.instrumentation.api.annotation.support.SpanAttributesExtractor;
@@ -16,7 +19,10 @@ import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttribute
 import io.opentelemetry.instrumentation.api.incubator.semconv.util.SpanNames;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
+
 
 public final class AnnotationSingletons {
 
@@ -28,6 +34,16 @@ public final class AnnotationSingletons {
   private static final Instrumenter<MethodRequest, Object> INSTRUMENTER_WITH_ATTRIBUTES =
       createInstrumenterWithAttributes();
   private static final SpanAttributesExtractor ATTRIBUTES = createAttributesExtractor();
+
+  @SuppressWarnings("unused")
+  private static final ConcurrentMap<String, DoubleHistogram> HISTOGRAMS =
+      new ConcurrentHashMap<>();
+
+  @SuppressWarnings("unused")
+  private static final ConcurrentMap<String, LongCounter> COUNTERS = new ConcurrentHashMap<>();
+
+  @SuppressWarnings("unused")
+  private static final Meter METER = GlobalOpenTelemetry.get().getMeter(INSTRUMENTATION_NAME);
 
   public static Instrumenter<Method, Object> instrumenter() {
     return INSTRUMENTER;
